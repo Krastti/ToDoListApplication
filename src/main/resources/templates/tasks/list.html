@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Задачи проекта</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="page">
+    <h1>Задачи проекта</h1>
+    <p class="subtitle" th:text="'Project ' + ${projectName}"></p>
+
+    <div class="toolbar">
+        <a class="btn" th:href="@{/projects/{projectId}/tasks/new(projectId=${projectId})}">+ Создать задачу</a>
+        <div class="toolbar-links">
+            <a class="btn btn-ghost" href="/projects">← Назад к проектам</a>
+        </div>
+    </div>
+
+    <div class="filter">
+        <span class="filter-label">Фильтр</span>
+        <a class="filter-pill" th:href="@{/projects/{projectId}/tasks(projectId=${projectId})}">Все</a>
+        <a class="filter-pill" th:href="@{/projects/{projectId}/tasks(projectId=${projectId}, status='TODO')}">TODO</a>
+        <a class="filter-pill" th:href="@{/projects/{projectId}/tasks(projectId=${projectId}, status='IN_PROGRESS')}">IN_PROGRESS</a>
+        <a class="filter-pill" th:href="@{/projects/{projectId}/tasks(projectId=${projectId}, status='DONE')}">DONE</a>
+    </div>
+
+    <table class="task-table" th:if="${not #lists.isEmpty(tasks)}">
+        <thead>
+        <tr>
+            <th>Название</th>
+            <th>Описание</th>
+            <th>Статус</th>
+            <th>Дедлайн</th>
+            <th>Действия</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="task : ${tasks}"
+            th:classappend="'status-' + ${#strings.toLowerCase(task.status.name())}">
+            <td class="title" th:text="${task.title}"></td>
+            <td class="description" th:text="${task.description}"></td>
+            <td>
+                <span class="status-badge" th:text="${task.status}"></span>
+            </td>
+            <td class="deadline" th:text="${task.deadline}"></td>
+            <td class="actions">
+                <a th:href="@{/projects/{projectId}/tasks/{id}/edit(projectId=${projectId}, id=${task.id})}">Редактировать</a>
+                <form th:action="@{/projects/{projectId}/tasks/{id}/delete(projectId=${projectId}, id=${task.id})}" method="post">
+                    <button type="submit" class="btn-danger">Удалить</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="empty-state" th:if="${#lists.isEmpty(tasks)}">
+        Задач пока нет — создайте первую.
+    </div>
+</div>
+</body>
+</html>
